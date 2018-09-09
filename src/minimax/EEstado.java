@@ -1,6 +1,6 @@
 package minimax;
 
-public enum ETipoNodo {
+public enum EEstado {
 	MIN,
 	MAX
 }

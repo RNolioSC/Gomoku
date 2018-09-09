@@ -1,31 +1,35 @@
 package minimax;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
 import tabuleiro.Jogada;
 
 public class Estado {
+	private EEstado tipoEstado;
+	
+	private int nivelAtualNaArvore;
+	private int nivelMaxADescerNaArvore;
+	
 	private boolean[][] matrizTabuleiro;
-	private Jogada jogadaEstadoAnterior;
-	private Jogada jogadaEstado;
+	private Jogada jogada;
 	
 	private int valorHeuristico;
 	private int valorAlfa;
 	private int valorBeta;
 	
-	public Estado(Jogada jogadaAnterior, boolean[][] matrizTabuleiro) {
+	public Estado(boolean[][] matrizTabuleiro, EEstado tipoEstado) {
 		this.matrizTabuleiro = matrizTabuleiro;
-		this.jogadaEstadoAnterior = jogadaAnterior;
 		
 		this.valorAlfa = -999999999;
 		this.valorBeta = 999999999;
 		this.valorHeuristico = -999999999;
+		
+		this.tipoEstado = tipoEstado;
+		
+		this.nivelAtualNaArvore = -1;
+		this.nivelMaxADescerNaArvore = -1;
 	}
 	
 	public void setJogada(Jogada jogada) {
-		this.jogadaEstado = jogada;
+		this.jogada = jogada;
 	}
 	public void setValorHeuristico(int valorHeuristico) {
 		this.valorHeuristico = valorHeuristico;
@@ -35,6 +39,15 @@ public class Estado {
 	}
 	public void setValorBeta(int valorBeta) {
 		this.valorBeta = valorBeta;
+	}
+	public void setTipoEstado(EEstado tipoEstado) {
+		this.tipoEstado = tipoEstado;
+	}
+	public void setNivelAtualNaArvore(int nivelAtualNaArvore) {
+		this.nivelAtualNaArvore = nivelAtualNaArvore;
+	}
+	public void setNivelMaxADescerNaArvore(int nivelMaxADescerNaArvore) {
+		this.nivelMaxADescerNaArvore = nivelMaxADescerNaArvore;
 	}
 	
 	public int getValorHeuristico() {
@@ -46,53 +59,61 @@ public class Estado {
 	public int getValorBeta() {
 		return this.valorBeta;
 	}
+	public EEstado getTipoEstado() {
+		return this.tipoEstado;
+	}
+	public int getNivelAtualNaArvore() {
+		return this.nivelAtualNaArvore;
+	}
+	public int getNivelMaxADescerNaArvore() {
+		return this.nivelMaxADescerNaArvore;
+	}
 	
 	public void calcularValorHeuristico(int valorHeuristicoDoPai) {
 		
 	}
 	
-	public ArrayList<Estado> getArrayEstadoDerivado() {
-		ArrayList<Estado> arrayEstadoDerivado;
-		arrayEstadoDerivado = new ArrayList<Estado>();
-		
-		for (int i = 0; i < 15; i++) {
-			for (int j = 0; j < 15; j++) {
-				if (this.matrizTabuleiro[i][j]) {
-					continue;
+	public void criarEstadosFilho() {
+		for (int k = 0; k <= 7; k++) {
+			for (int i = -k; i <= k; i++) {
+				if (!this.matrizTabuleiro[7+i][7-k]) {
+					this.criarJogada(7+i, 7-k);
 				}
 				
-				Jogada jogadaDerivada;
-				jogadaDerivada = new Jogada(null, i, j);
+				if (!this.matrizTabuleiro[7+i][7+k]) {
+					this.criarJogada(7+i, 7+k);
+				}
 				
-				Estado estadoDerivado;
-				estadoDerivado = new Estado(this.jogadaEstado, matrizTabuleiro);
-				estadoDerivado.setJogada(jogadaDerivada);
-				
-				arrayEstadoDerivado.add(estadoDerivado);
+				if (i != -k && i != k) {
+					if (!this.matrizTabuleiro[7-k][7+i]) {
+						this.criarJogada(7-k, 7+i);
+					}
+					
+					if (!this.matrizTabuleiro[7+k][7+i]) {
+						this.criarJogada(7+k, 7+i);
+					}
+				}
 			}
 		}
-		
-		this.ordenarArray(arrayEstadoDerivado);
-		
-		return arrayEstadoDerivado;
 	}
 	
-	private void ordenarArray(ArrayList<Estado> array) {
-		Comparator<Estado> comparator;
-		comparator = new Comparator<Estado>() {
-			@Override
-			public int compare(Estado estado1, Estado estado2) {
-				if (estado1.getValorHeuristico() < estado2.getValorHeuristico()) {
-					return -1;
-				}
-				if (estado1.getValorHeuristico() > estado2.getValorHeuristico()) {
-					return 1;
-				}
-				
-				return 0;
-			}
-		};
+	private Jogada criarJogada(int linha, int coluna) {
+		Jogada jogadaNova;
+		jogadaNova = new Jogada(null, linha, coluna);
 		
-		Collections.sort(array, comparator);
+		EEstado tipoEstadoNovo;
+		if (this.tipoEstado == EEstado.MAX) {
+			tipoEstadoNovo = EEstado.MIN;
+		} else {
+			tipoEstadoNovo = EEstado.MAX;
+		}
+		
+		Estado estadoNovo;
+		estadoNovo = new Estado(matrizTabuleiro, tipoEstadoNovo);
+		estadoNovo.setJogada(jogadaNova);
+		estadoNovo.setNivelAtualNaArvore(this.nivelAtualNaArvore+1);
+		estadoNovo.setNivelMaxADescerNaArvore(this.nivelMaxADescerNaArvore);
+		
+		return jogadaNova;
 	}
 }
