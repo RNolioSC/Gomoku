@@ -1,0 +1,9 @@
+package jogada;
+
+public enum ETipoCombinacao {
+	INDEFINIDO,
+	HORIZONTAL,
+	VERTICAL,
+	DIAGONAL_PRINCIPAL,
+	DIAGONAL_SECUNDARIA
+}
