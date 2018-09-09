@@ -4,7 +4,7 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
-import jogada.Jogada;
+import tabuleiro.Jogada;
 import tabuleiro.Jogador;
 import tabuleiro.Tabuleiro;
 

@@ -1,7 +1,6 @@
 package tabuleiro;
 
 import interfaceGrafica.Window;
-import jogada.Jogada;
 
 public class Tabuleiro {
 	private Jogador jogadorNaVez;

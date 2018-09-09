@@ -1,7 +1,5 @@
 package tabuleiro;
 
-import jogada.Jogada;
-
 public class VerificarVitoria {
 	private Tabuleiro tabuleiro;
 	

@@ -2,7 +2,7 @@ package interfaceGrafica;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import jogada.Jogada;
+import tabuleiro.Jogada;
 import tabuleiro.Jogador;
 
 public class EventMouse implements MouseListener {

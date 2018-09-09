@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import jogada.Jogada;
+import tabuleiro.Jogada;
 
 public class Estado {
 	private boolean[][] matrizTabuleiro;

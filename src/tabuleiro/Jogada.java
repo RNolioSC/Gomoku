@@ -1,6 +1,4 @@
-package jogada;
-
-import tabuleiro.Jogador;
+package tabuleiro;
 
 public class Jogada {
 	private Jogador jogador;
