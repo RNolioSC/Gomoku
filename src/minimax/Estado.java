@@ -15,17 +15,27 @@ public class Estado {
 	private int valorAlfa;
 	private int valorBeta;
 	
-	public Estado(boolean[][] matrizTabuleiro, EEstado tipoEstado) {
+	public Estado(boolean[][] matrizTabuleiro, EEstado tipoEstado, Jogada jogada) {
 		this.matrizTabuleiro = matrizTabuleiro;
+		
+		this.jogada = jogada;
+		this.tipoEstado = tipoEstado;
 		
 		this.valorAlfa = -999999999;
 		this.valorBeta = 999999999;
-		this.valorHeuristico = -999999999;
-		
-		this.tipoEstado = tipoEstado;
 		
 		this.nivelAtualNaArvore = -1;
 		this.nivelMaxADescerNaArvore = -1;
+		
+		this.calcularValorHeuristicoDaJogada();
+	}
+	private void calcularValorHeuristicoDaJogada() {
+		
+		
+		if (this.nivelAtualNaArvore == this.nivelMaxADescerNaArvore) {
+			this.valorAlfa = this.valorHeuristico;
+			this.valorBeta = this.valorHeuristico;
+		}
 	}
 	
 	public void setJogada(Jogada jogada) {
@@ -69,35 +79,51 @@ public class Estado {
 		return this.nivelMaxADescerNaArvore;
 	}
 	
-	public void calcularValorHeuristico(int valorHeuristicoDoPai) {
+	public void descerArvore() {
+		if (this.nivelAtualNaArvore >= this.nivelMaxADescerNaArvore) {
+			return;
+		}
 		
-	}
-	
-	public void criarEstadosFilho() {
 		for (int k = 0; k <= 7; k++) {
 			for (int i = -k; i <= k; i++) {
 				if (!this.matrizTabuleiro[7+i][7-k]) {
-					this.criarJogada(7+i, 7-k);
+					this.criarEstadoFilho(7+i, 7-k);
+					
+					if (this.valorAlfa >= this.valorBeta) {
+						return;
+					}
 				}
 				
 				if (!this.matrizTabuleiro[7+i][7+k]) {
-					this.criarJogada(7+i, 7+k);
+					this.criarEstadoFilho(7+i, 7+k);
+					
+					if (this.valorAlfa >= this.valorBeta) {
+						return;
+					}
 				}
 				
 				if (i != -k && i != k) {
 					if (!this.matrizTabuleiro[7-k][7+i]) {
-						this.criarJogada(7-k, 7+i);
+						this.criarEstadoFilho(7-k, 7+i);
+						
+						if (this.valorAlfa >= this.valorBeta) {
+							return;
+						}
 					}
 					
 					if (!this.matrizTabuleiro[7+k][7+i]) {
-						this.criarJogada(7+k, 7+i);
+						this.criarEstadoFilho(7+k, 7+i);
+						
+						if (this.valorAlfa >= this.valorBeta) {
+							return;
+						}
 					}
 				}
 			}
 		}
 	}
 	
-	private Jogada criarJogada(int linha, int coluna) {
+	private Estado criarEstadoFilho(int linha, int coluna) {
 		Jogada jogadaNova;
 		jogadaNova = new Jogada(null, linha, coluna);
 		
@@ -108,12 +134,21 @@ public class Estado {
 			tipoEstadoNovo = EEstado.MAX;
 		}
 		
-		Estado estadoNovo;
-		estadoNovo = new Estado(matrizTabuleiro, tipoEstadoNovo);
-		estadoNovo.setJogada(jogadaNova);
-		estadoNovo.setNivelAtualNaArvore(this.nivelAtualNaArvore+1);
-		estadoNovo.setNivelMaxADescerNaArvore(this.nivelMaxADescerNaArvore);
+		Estado estadoFilho;
+		estadoFilho = new Estado(matrizTabuleiro, tipoEstadoNovo, jogadaNova);
+		estadoFilho.setNivelAtualNaArvore(this.nivelAtualNaArvore+1);
+		estadoFilho.setNivelMaxADescerNaArvore(this.nivelMaxADescerNaArvore);
 		
-		return jogadaNova;
+		estadoFilho.descerArvore();
+		
+		if (this.tipoEstado == EEstado.MAX) {
+			this.valorAlfa = Math.max(estadoFilho.valorBeta, this.valorAlfa);
+			this.valorHeuristico = Math.max(estadoFilho.valorHeuristico, this.valorHeuristico);
+		} else {
+			this.valorBeta = Math.min(estadoFilho.valorAlfa, this.valorBeta);
+			this.valorHeuristico = Math.min(estadoFilho.valorHeuristico, this.valorHeuristico);
+		}
+		
+		return estadoFilho;
 	}
 }
